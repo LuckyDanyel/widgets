@@ -26,9 +26,9 @@ function factoryWidget(nameWidget, settings) {
         'tizer3': './helloWorld2.vue',
     }
     const widgetPath = widgets[nameWidget];
-    const asyncComponent = defineAsyncComponent(() => import(`${widgetPath}`));
-    const app = createApp(App)
-    app.component('async-component', asyncComponent)
+    const asyncComponent = defineAsyncComponent(() => import(/* webpackChunkName: "widget" */`${widgetPath}`));
+    const app = createApp(App);
+    app.component('async-component', asyncComponent);
     app.provide('text', text);
     app.mount(`#${id}`);
 }

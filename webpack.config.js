@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader')
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
     entry: {
@@ -8,6 +11,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
+        chunkFilename: '[name].[contenthash].js', // chunkFilename - преднозначен для компонентов с ленивой загрузкой
         filename: '[name].js',
     },
     plugins: [
@@ -17,6 +21,8 @@ module.exports = {
             filename: 'index_vue.html',
         }),
         new VueLoaderPlugin(),
+        new CleanWebpackPlugin(),
+        new BundleAnalyzerPlugin(),
     ],
     module: {
         rules: [
@@ -24,6 +30,19 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader'
             },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader',
+                ],
+            },
         ]
+
+    },
+    optimization: {
+        splitChunks: {
+            chunks: 'async'
+        }
     }
 }
