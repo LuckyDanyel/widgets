@@ -6,13 +6,13 @@ function init(...data) {
     if(data.length) {
         const nameWidget = data[0];
         const settings = data[1];
-        factoryWidget(nameWidget, settings);
+        return factoryWidget(nameWidget, settings);
     } else {
         let massiveWidgetsSettings = window.travelata?.queue || [];
         massiveWidgetsSettings.forEach(widgetsSettings => {
             const nameWidget = widgetsSettings[0];
             const settings = widgetsSettings[1];
-            factoryWidget(nameWidget, settings);
+            init(nameWidget, settings);
         });
         massiveWidgetsSettings = [];
     }
@@ -31,7 +31,9 @@ function factoryWidget(nameWidget, settings) {
     app.component('async-component', asyncComponent);
     app.provide('text', text);
     app.mount(`#${id}`);
+    return app;
 }
 
 init();
 window.travelata = init;
+

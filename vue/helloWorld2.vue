@@ -1,16 +1,15 @@
 <template lang="">
     <div>
-        <h1>Hello World</h1>
-        <h1>Hello World</h1>
-        <h1>Hello World</h1>
-        <h1>Hello World</h1>
+        <h1>Third type widget</h1>
+        <h1>{{ hello }}</h1>
     </div>
 </template>
-<script>
-export default {
-    
-}
+<script setup>
+    import { inject } from 'vue';
+    const hello = inject('text');
 </script>
-<style lang="">
-    
+<style>
+    h1 {
+        color: red;
+    }
 </style>

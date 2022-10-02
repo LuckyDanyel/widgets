@@ -1,28 +1,23 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { VueLoaderPlugin } = require('vue-loader')
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const CompressionPlugin = require("compression-webpack-plugin");
+const { VueLoaderPlugin } = require('vue-loader');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
     entry: {
-        vue: path.resolve(__dirname, './vue/main.js'),
+        widgetsInit: path.resolve(__dirname, './vue/widgetsInit.js'),
     },
     output: {
         path: path.resolve(__dirname, './dist'),
         chunkFilename: '[name].[contenthash].js', // chunkFilename - преднозначен для компонентов с ленивой загрузкой
         filename: '[name].js',
+        library: 'widgetsInit',
+        libraryExport: 'default',
+        libraryTarget: 'umd',
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template:  path.resolve(__dirname, './index.html'),
-            chunks: ['vue'],
-            filename: 'index_vue.html',
-        }),
         new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
-        new BundleAnalyzerPlugin(),
     ],
     module: {
         rules: [
@@ -37,12 +32,23 @@ module.exports = {
                     'css-loader',
                 ],
             },
+            {
+                test: /\.(js)$/,
+                exclude: /node_modules/,
+                use: ['babel-loader']
+            }
         ]
 
     },
+    resolve: {
+        extensions: ['*', '.js']
+    },
+    experiments: {
+        topLevelAwait: true
+    },
     optimization: {
-        splitChunks: {
-            chunks: 'async'
-        }
-    }
+        minimizer: [new TerserPlugin({
+          extractComments: false,
+        })],
+    },
 }
