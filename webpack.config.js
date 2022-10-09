@@ -1,11 +1,15 @@
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const { VueLoaderPlugin } = require('vue-loader');
+const HTMLWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const preprocess = require('svelte-preprocess');
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 
 module.exports = {
     entry: {
-        widgetsInit: path.resolve(__dirname, './vue/widgetsInit.js'),
+        index: path.resolve(__dirname, './svelte/index.js'),
     },
     output: {
         path: path.resolve(__dirname, './dist'),
@@ -16,24 +20,44 @@ module.exports = {
         libraryTarget: 'umd',
     },
     plugins: [
-        new VueLoaderPlugin(),
         new CleanWebpackPlugin(),
+        new HTMLWebpackPlugin({
+            template:  path.join(__dirname, './index.html'),
+            filename: `index.html`,
+        }),
     ],
     module: {
         rules: [
             {
-                test: /\.vue$/,
-                loader: 'vue-loader'
-            },
-            {
                 test: /\.css$/,
                 use: [
-                    'vue-style-loader',
-                    'css-loader',
-                ],
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            url: true,
+                        }
+                    },
+                ]
             },
             {
-                test: /\.(js)$/,
+                test: /\.svelte$/,
+                use: [
+                {
+                    loader: 'svelte-loader',
+                    options: {
+                        emitCss: false,
+                        compileOptions: { 
+                            css: false 
+                        } 
+                    }
+                },
+                {
+                    loader: 'assets-loader',
+                }
+            ],
+            },
+            {
+                test: /\.js$/,
                 exclude: /node_modules/,
                 use: ['babel-loader']
             }
@@ -41,14 +65,32 @@ module.exports = {
 
     },
     resolve: {
-        extensions: ['*', '.js']
+        extensions: ['.js', '.vue'],
+        alias: {
+            'vue': '@vue/runtime-dom',
+        }
+    },
+    resolveLoader: {
+        alias: {
+          'assets-loader':  path.resolve(__dirname, './loaderStyle.js'),
+        },
     },
     experiments: {
         topLevelAwait: true
     },
     optimization: {
-        minimizer: [new TerserPlugin({
-          extractComments: false,
-        })],
+        minimizer: [
+            new TerserPlugin({
+                extractComments: false,
+            }),
+            new CssMinimizerPlugin(),
+        ],
+        splitChunks: {
+            name: 'vendors',
+            chunks: 'all',
+            filename: '[name].[contenthash].js'
+        },
+        minimize: true,
+
     },
 }
