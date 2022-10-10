@@ -1,5 +1,5 @@
 .image {
 	height: 500px;
 	width: 500px;
-	background-image: url('./assets/image.lazy-assets-loading.jpg');
+	background-image: url('../assets/image.jpg');
 }

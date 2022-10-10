@@ -3,9 +3,15 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const preprocess = require('svelte-preprocess');
+const sveltePreprocess = require('svelte-preprocess');
+const tailwindcss = require("tailwindcss");
+const autoprefixer = require("autoprefixer");
+const postcss = require('postcss')
+const postcssCssnext = require('postcss-cssnext')
+const postcssImport = require('postcss-import')
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const cssLoader = require('css-loader');
 
 module.exports = {
     entry: {
@@ -25,6 +31,9 @@ module.exports = {
             template:  path.join(__dirname, './index.html'),
             filename: `index.html`,
         }),
+        new MiniCssExtractPlugin({
+            filename: '[name].[contenthash].css'
+        }),
     ],
     module: {
         rules: [
@@ -32,35 +41,42 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     {
+                        loader: 'assets-loader'
+                    },
+                    // {
+                    //     loader: 'style-loader',
+                    // },
+                    {
                         loader: 'css-loader',
                         options: {
-                            url: true,
+                            esModule: true,
                         }
                     },
-                ]
-            },
-            {
-                test: /\.svelte$/,
-                use: [
-                {
-                    loader: 'svelte-loader',
-                    options: {
-                        emitCss: false,
-                        compileOptions: { 
-                            css: false 
-                        } 
-                    }
-                },
-                {
-                    loader: 'assets-loader',
-                }
-            ],
+                ],
             },
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
                 use: ['babel-loader']
+            },
+            {
+                test: /\.svelte$/,
+                use: [
+                  {
+                    loader: 'svelte-loader',
+                    options: {
+                        compilerOptions: {
+                            css: false,
+                        }
+                    }
+                  }
+                ]
+              },
+            {
+                test: /\.(png|jpg|gif)/,
+                type: 'asset/resource'
             }
+         
         ]
 
     },
@@ -87,7 +103,7 @@ module.exports = {
         ],
         splitChunks: {
             name: 'vendors',
-            chunks: 'all',
+            chunks: 'async',
             filename: '[name].[contenthash].js'
         },
         minimize: true,
