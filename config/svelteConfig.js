@@ -1,12 +1,7 @@
 const path = require('path');
-const HTMLWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const optimizationCommon = require('./optimization');
-const pluginsCommon = require('./plugins');
-const moduleCommon = require('./module');
 
 module.exports = (env, dirname) => {
-    console.log('svelte config', dirname);
     return {
         entry: {
             index: path.resolve(dirname, './svelte/index.js'),
@@ -20,7 +15,6 @@ module.exports = (env, dirname) => {
             libraryTarget: 'umd',
         },
         plugins: [
-            ...pluginsCommon(dirname),
             new MiniCssExtractPlugin({
                 filename: '[name].[contenthash].css',
                 insert: (styles) => {
@@ -32,7 +26,6 @@ module.exports = (env, dirname) => {
         ],
         module: {
             rules: [
-                ...moduleCommon().rules,
                 {
                     test: /\.svelte$/,
                     use: [
@@ -58,13 +51,11 @@ module.exports = (env, dirname) => {
             }
         },
         optimization: {
-            minimizer: optimizationCommon().minimizer,
             splitChunks: {
                 name: 'vendors',
                 chunks: 'async',
                 filename: '[name].js',
             },
-            minimize: optimizationCommon().minimize,
         },
     }
 }   

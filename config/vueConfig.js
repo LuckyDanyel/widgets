@@ -1,8 +1,5 @@
 const path = require('path');
 const { VueLoaderPlugin } = require("vue-loader");
-const optimizationCommon = require('./optimization');
-const pluginsCommon = require('./plugins');
-const moduleCommon = require('./module');
 
 module.exports = (env, dirname) => {
     return {
@@ -13,12 +10,10 @@ module.exports = (env, dirname) => {
             path: path.resolve(dirname, './dist/vue'),
         },
         plugins: [
-            ...pluginsCommon(dirname),
             new VueLoaderPlugin()
         ],
         module: {
             rules: [
-                ...moduleCommon().rules,
                 {
                     test: /\.vue$/,
                     loader: "vue-loader",
@@ -29,6 +24,5 @@ module.exports = (env, dirname) => {
         resolve: {
             extensions: ['.js', '.vue', '.css'],
         },
-        optimization: optimizationCommon(),
     }
 }
