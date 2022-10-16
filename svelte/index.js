@@ -7,8 +7,9 @@ async function factoryWidget(nameWidget, settings) {
         widgetsApp[id].$destroy();
     } else {
         const element = document.getElementById(id);
-        const isElementHasShadowDom = element.attachShadow;
-        target = (isElementHasShadowDom) ? element.attachShadow({ mode: 'open' }) : element;
+        target = element;
+        // const isElementHasShadowDom = element.attachShadow;
+        // target = (isElementHasShadowDom) ? element.attachShadow({ mode: 'open' }) : element;
     }
     let component = null;
     if(nameWidget === 'tizer') {
@@ -16,7 +17,6 @@ async function factoryWidget(nameWidget, settings) {
     } else if(nameWidget ==='tizer1') {
         component = await import(/* webpackChunkName: "widgetType2" */'./components/widgetType2/helloWorld1.svelte');
     }
-    console.log(component);
     if(component) {
         const App = component.default;
         widgetsApp[id] = new App({

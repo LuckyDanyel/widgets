@@ -1,18 +1,15 @@
-let fs = require('fs');
-const path = require('path');
-const loaderUtils = require('loader-utils');
 
-module.exports = function(content) {
-    console.log(content);
+export default function(content, options) {
+    console.log(content, options);
+    // const file = this.resourcePath;
+    // const fileContent = fs.readFileSync(file, "utf8");
+    // console.log(fileContent);
     // const name = content.match(new RegExp(/".{1,}"/))
     // const outPath = path.resolve(__dirname, 'dist');
     // const fileName = name[0].replace(/['"]/g, '');
     // const pathToFile = path.resolve(outPath, String(fileName));
     // // return fs.readFileSync(pathToFile, "utf8");
     // console.log(this.recordsOutputPath, 'Первая')
-    // const url = loaderUtils.interpolateName(this, "[name].[query].css", {
-    //     content,
-    // });
     // console.log(url);
     // console.log(this._compilation.modules);
     return content;
